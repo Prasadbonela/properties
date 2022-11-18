@@ -8,12 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Properties;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -32,31 +30,24 @@ public class ConfigTest {
 	@BeforeEach
 	void setUp() throws IOException {
 		String fileName;
-		Properties props;
+		PrintWriter out;
 		
 		fileName = "config.properties";
-		props = new Properties();
-		props.setProperty("default.filenames", "default1,default2");
-		props.setProperty("key1", "A");
-		props.store(new FileOutputStream(fileName), "");
+		out = new PrintWriter(fileName);
+		out.println("default.filenames = default1,default2");
+		out.println("key1 = A");
+		out.close();
 
 		fileName = "default1.properties";
-		props = new Properties();
-		props.setProperty("key1", "B");
-		props.store(new FileOutputStream(fileName), "");
+		out = new PrintWriter(fileName);
+		out.println("key1 = B");
+		out.close();
 
 		fileName = "default2.properties";
-		props = new Properties();
-		props.setProperty("key1", "C");
-		props.setProperty("key2", "D");
-		props.store(new FileOutputStream(fileName), "");
-	}
-
-	@AfterAll
-	static void tearDown() throws IOException {
-		Files.deleteIfExists(Paths.get("config.properties"));
-		Files.deleteIfExists(Paths.get("default1.properties"));
-		Files.deleteIfExists(Paths.get("default2.properties"));
+		out = new PrintWriter(fileName);
+		out.println("key1 = C");
+		out.println("key2 = D");
+		out.close();
 	}
 
 	@Test
