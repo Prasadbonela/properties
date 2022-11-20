@@ -7,76 +7,52 @@ Duration _45 minutes_.
 
 In this task, you need to determine a class which can operate several properties files. One of them is the main properties file and others are an ordereded list of default properties.
 
-There is a file **config.properties** with properties, and it **may** contain property
+Main properties file is **config.properties**. It may (or may not) contain the property with name _default.filenames_:
 ~~~
-default.filenames = default1,default2,default3,...
+default.filenames = default1,default2,default3
 ~~~
-where default1, default2, default3, ... are names of properties files (without extension _.properties_).
+where default1, default2, default3 are names of the default properties files (without extension _.properties_).
 
-`Config` class implements logic to work with all properties that are contained in files:
+The `Config` class implements logic to work with all properties that are contained in the main properties file and in the default properties files:
 ~~~
 config.properties
 default1.properties
 default2.properties
 default3.properties
-...
 ~~~
 
-Objects of `Config` use properties from **defaultX.properties** as default properties.
-
-> Names **default1**, **default2**, **default3**, ... are given for a example. In the common case names of properties files must be obtain dynamically from the **config.properties** file.
+> Names **default1**, **default2**, **default3** are given for a example. In the common case names of properties files must be obtain dynamically from the **config.properties** file.
 
 Please, proceed to `Config` class and implement its content:  
 
-* `public Config()`
-initializes a `Config` object;
-
-* `public void reset()`
-reinitializes this `Config` object;
-
-* `public String get(String key)`
-returns the value by the specified _key_;
-
-* `public void remove(String key)`
-removes the property by the specified `key`, if no such property does nothing;
-
-* `public void set(String key, String value)`
-sets the property with the specified _key_ and _value_;
-
-* `public void save()`
-saves properties.
-
-## Details
-
-For a example the config file **config.properties** contains property 
-~~~
-default.filenames = default1,default2,default3
-~~~
+* `public Config()`  
+Initializes a `Config` object.
 
 * `public void reset()`  
 Sets this `Config` object's state to the initial state as if it had just been created.
 
 * `public String get(String key)`  
-Searches and returns the value by the specified `key`. The search process is performed in the following order:  
- - **config.properties**  
- - **default1.properties**  
- - **default2.properties**  
- - **default3.properties**  
- 
- Returns `null` if no property with the specified key is found.
+Searches and returns the value by the specified `key`. Returns `null` if there is no property with such `key`. The search process is performed in the following order:  
+  - **config.properties**  
+  - the first default properties file (if it exists)
+  - the second default properties file (if it exists)
+  - the third default properties file (if it exists)
+  - ...
 
-* `public void remove(String key)`
-Removes the property with the specified `key` if it previously has been read from the **config.properties** file or has been set with the help of the `set` method.
+* `public void remove(String key)`  
+Removes the property by the specified `key`. Does nothing if there is no property with such `key`. This method can remove only property that conforms at least one of the following:
+  - it previously has been read from the **config.properties** file;
+  - it has been set with the help of the `set` method.
 
 * `public void set(String key, String value)`  
-Sets the property with the specified key and value. This property will be saved in **config.properties** if the `save` method will be invoked. 
+Sets the property with the specified _key_ and _value_; this property will be saved in **config.properties** file if the `save` method will be invoked. 
 
 * `public void save()`  
-Saves all the current properties in the **config.properties** file.
-Current properties are the following:
- - obtained from the **config.properties** file;
- - added with the help of the `set` method;
- - except those that are removed by the `remove` method.
+Saves all the current properties in the **config.properties** file. Current properties are the following:
+  - all properties obtained from the **config.properties** file;
+  - all properties added with the help of the `set` method except those that are removed by using the `remove` method.
+
+## Details
 
 Pay attention to the constructor  
 ~~~
