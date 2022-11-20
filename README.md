@@ -36,7 +36,6 @@ Searches and returns the value by the specified `key`. Returns `null` if there i
   - **config.properties**  
   - the first default properties file (if it exists)
   - the second default properties file (if it exists)
-  - the third default properties file (if it exists)
   - ...
 
 * `public void remove(String key)`  
