@@ -33,8 +33,8 @@ Now, please proceed to the `Config` class, which has a config field of the  `Pro
 *	You may add the throws section to the descriptions of methods of the `Config` class that read/write files.  
 *	The `reset()` method reads properties from files with default properties in order, starting with the last file specified in the value of the `default.filenames` key and ending with the `config.properties` file.  
 *	The current properties are:
-  - All properties obtained from the original `config.properties` file, except for those removed by the remove method  
-  - All properties added by the set method  
+    - All properties obtained from the original `config.properties` file, except for those removed by the remove method  
+    - All properties added by the set method  
 *	The `remove` method can only delete a property that was read from the original `config.properties` file or set by the `set` method.  
 *  The constructor of the `Properties` class with a parameter of the `Properties` type can be used to recursively create a `Properties` object with given default properties.  
 
