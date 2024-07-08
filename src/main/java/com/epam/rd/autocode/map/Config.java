@@ -1,75 +1,80 @@
 package com.epam.rd.autocode.map;
 
 import java.io.*;
-import java.util.*;
+import java.util.Properties;
 
 public class Config {
+	Properties config;
 
-	private Properties config;
 
-	public Config() {
+	public Config() throws IOException {
 		this.config = new Properties();
 		reset();
 	}
 
-	public void reset() {
-		config.clear();
-		String[] defaultFiles = getDefaultFilenames();
-		for (int i = defaultFiles.length - 1; i >= 0; i--) {
-			loadPropertiesFromFile(defaultFiles[i] + ".properties");
-		}
-		loadPropertiesFromFile("config.properties");
-	}
 
-	public String get(String key) {
-		String value = config.getProperty(key);
-		if (value == null) {
-			String[] defaultFiles = getDefaultFilenames();
-			for (String filename : defaultFiles) {
-				Properties defaultProps = new Properties();
-				try {
-					defaultProps.load(new FileInputStream(filename + ".properties"));
-					value = defaultProps.getProperty(key);
-					if (value != null) break;
-				} catch (IOException e) {
-					// Handle exception as needed
+	public void reset() throws IOException {
+		config.clear();
+		try (InputStream input = new FileInputStream("config.properties")) {
+			config.load(input);
+			String defaultFilenames = config.getProperty("default.filenames");
+			if (defaultFilenames != null) {
+				String[] filenames = defaultFilenames.split(",");
+				for (int i = filenames.length - 1; i >= 0; i--) {
+					String filename = filenames[i].trim() + ".properties";
+					try (InputStream reader = new FileInputStream(filename)) {
+						Properties defaultProp = new Properties();
+						defaultProp.load(reader);
+					}
 				}
 			}
 		}
-		return value;
+	}
+
+	public String get(String key) throws IOException {
+		try (InputStream input = new FileInputStream("config.properties")) {
+			if (config.isEmpty()) {
+				config.load(input);
+			} else {
+				if (config.getProperty(key) == null) {
+
+					String defaultFilenames = config.getProperty("default.filenames");
+					if (defaultFilenames != null) {
+						String[] filenames = defaultFilenames.split(",");
+						for (String s : filenames) {
+							String filename = s.trim() + ".properties";
+							try (InputStream reader = new FileInputStream(filename)) {
+								Properties defaultProp = new Properties();
+								defaultProp.load(reader);
+								if (defaultProp.getProperty(key) != null) {
+									return defaultProp.getProperty(key);
+								}
+							}
+						}
+					}
+				}
+			}
+			return config.getProperty(key);
+		}
+	}
+
+	public void remove(String key) {
+		String existingValue = config.getProperty(key);
+		if (existingValue != null) {
+			config.remove(key);
+		}
+	}
+
+	public void save() {
+		try (OutputStream output = new FileOutputStream("config.properties")) {
+			config.store(output, null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void set(String key, String value) {
 		config.setProperty(key, value);
 	}
 
-	public void save() throws IOException {
-		try (OutputStream outputStream = new FileOutputStream("config.properties")) {
-			config.store(outputStream, null);
-		}
-	}
-
-	public void remove(String key) {
-		config.remove(key);
-	}
-
-	// Private methods for loading properties
-
-	private String[] getDefaultFilenames() {
-		String defaultFilenames = config.getProperty("default.filenames");
-		if (defaultFilenames != null && !defaultFilenames.isEmpty()) {
-			return defaultFilenames.split(",");
-		}
-		return new String[0];
-	}
-
-	private void loadPropertiesFromFile(String filename) {
-		Properties properties = new Properties();
-		try (InputStream inputStream = new FileInputStream(filename)) {
-			properties.load(inputStream);
-			config.putAll(properties);
-		} catch (IOException e) {
-			// Handle exception as needed
-		}
-	}
 }
